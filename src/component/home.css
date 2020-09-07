@@ -157,3 +157,18 @@ body {
     font-size: 3.5rem;
   }
 }
+
+.pointers {
+  border: 2px solid gray;
+  height: 455px;
+  width: 505px;
+  margin: 5px 11px 7px 448px;
+}
+
+.flip-image {
+  max-width: 181px;
+  padding: 3px;
+  padding-bottom: 10px;
+  min-height: 200px;
+  max-height: 268px;
+}

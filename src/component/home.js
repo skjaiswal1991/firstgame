@@ -18,6 +18,11 @@ const sec = [
         title:'test the Cases',
         image: './img/bgimage.jpg',
         link: '/testcase'
+    },
+    {
+        title:'Tic toc with Socket',
+        image: './img/bgimage.jpg',
+        link: '/tictoc'
     }
     
 ]
