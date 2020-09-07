@@ -6,9 +6,9 @@
   }
   
   .content{
-    margin: .4vw 0;
+    /* margin: .4vw 0;
     background: lightblue;
-    padding: .4vw;
+    padding: .4vw; */
   }
   .tic-panel{
     border: solid 2px black;
@@ -248,4 +248,8 @@ margin: 0;
   bottom: 0px;
   position: absolute;
   width: 100%;
+}
+div.key {
+  max-height: 140px;
+  height: 133px;
 }

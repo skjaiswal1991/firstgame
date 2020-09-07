@@ -7,9 +7,19 @@ const socket  = io('http://localhost:3020');
 class Tictoc extends Component {
     constructor(props) {
         super(props);
-        this.state = { totalbox:9,txtmsg:[],msg:''}
+        this.state = { totalbox:9,txtmsg:[],msg:'',count:0,user:[],AIComputer:[],winner:''}
+        this.WinArray = [
+                        [0,1,2],
+                        [3,4,5],
+                        [6,7,8],
+                        [0,3,6],
+                        [1,4,7],
+                        [2,5,8],
+                        [0,4,8],
+                        [6,4,2]
+                    ]
        
-        
+
         socket.on('msgFromServer',(data)=>{
             console.log(data.txt);
 
@@ -20,20 +30,72 @@ class Tictoc extends Component {
                         txtmsg
                     }
             })
-               
                     
         })
-        
+      //  let win = [0,1,2];
+      //  this.winChecker(win,1);
       
-       // this.formsubmit = this.formsubmit.bind();
     }
 
     formsubmit = (e) =>{
         e.preventDefault();
         //this.setState({msg:e.target.groupname.value})
-
         socket.emit('msgFromClient',{txt:e.target.groupname.value})
         
+    }
+
+    componentDidMount(){
+    }
+
+
+    // Check the winner 
+    winChecker = (data,user) =>{
+            
+            //console.log(data);
+            var check = data
+            this.WinArray.map((w,i)=>{
+                //var dd = this.getArraysIntersection(w,check);
+               // console.log(user);
+                //if(dd.length == 3){
+                   // this.setState({winner:user});
+                  //  var alt = user == 1 ? 'User' : 'AIComputer'                    
+                   //let user =  [alt] 
+                   
+                  //  return 'sanjay';
+                //}else{
+                    return 'sanajy';
+               // }
+            })
+    }
+   getArraysIntersection =  (a1,a2)=>{
+        return  a1.filter(function(n) { return a2.indexOf(n) !== -1;});
+    }
+    clickEvent = (event) =>{
+        const {count,user,AIComputer} = this.state;
+        console.log(event.target.id);
+        var Winner = '';
+        this.setState({count: count + 1})
+        var id = parseInt(event.target.id);
+        if( parseInt(count) % 2 === 0 ){
+            document.getElementById(event.target.id).innerHTML = 'O';
+            user.push(id);
+            Winner = this.winChecker(user,0);
+            console.log(Winner);
+        }else{
+            document.getElementById(event.target.id).innerHTML = 'X';
+            AIComputer.push(id);
+            Winner = this.winChecker(AIComputer,1);
+            console.log(Winner);
+        }
+        
+        console.log(Winner);
+
+        if(Winner){
+            console.log()
+            alert(`${Winner} is a Winner`);
+            // Winner function
+            
+        }
     }
     render() { 
         const{ txtmsg } = this.state;
@@ -45,7 +107,50 @@ class Tictoc extends Component {
         return ( 
             <React.Fragment>
 
-                        <div class="container-fluid h-100">
+<div className="container">
+                   <div className="row">
+                       <div className="col-12 col-sm-6">
+                           
+                           <form method="post" onSubmit={this.formsubmit}>
+                               <div className="form-group">
+                                   <label>Enter the group name</label>
+                                   <input className="form-control" name="groupname"></input>
+                               </div>
+                               <div className="form-group">
+                                 <input type="submit" className='btn btn-primary' ></input>
+                               </div>
+                           </form>
+                       </div>
+                       
+                   </div>
+                   <div className="row">
+                        <div className="col-12 col-sm-6">
+                            <ul>
+                                {txtmsg.map((m,i) =>( <li>{m}</li>))
+                             }
+                            </ul>
+                        </div>
+                   </div>
+               </div>
+                    <div class="container-fluid">
+                        <div class="row">
+                        {/* <div class="col-12 col-sm-2 ads"> "ads </div> */}
+                        <div class="col-4 col-sm-4 content">
+                            <div class="container-fluid tic-container">
+                                <div class="row tic-row">
+                                    {Array.from({length:9},(_,i) => (
+                                                <div class="col-4 tic-box key" id={i} onClick={this.clickEvent} ></div>
+                                              
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                        {/* <div class="col-12 col-sm-2 tic-panel"> PANEL-THINGY Score: Foo bar: stuffReset game and all that blah </div> */}
+                        {/* <div class="col-12 col-sm-2 ads"> ads </div> */}
+                        </div>
+                    </div>
+
+                        {/* <div class="container-fluid h-100">
                             <div class="row justify-content-center h-100">
                                 <div class="col-md-4 col-xl-3 chat">
                                     <div class="card mb-sm-3 mb-md-0 contacts_card">
@@ -117,7 +222,7 @@ class Tictoc extends Component {
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div> */}
             </React.Fragment>
          );
     }
