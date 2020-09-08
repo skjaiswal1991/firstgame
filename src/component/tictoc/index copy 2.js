@@ -7,7 +7,7 @@ const socket  = io('http://localhost:3020');
 class Tictoc extends Component {
     constructor(props) {
         super(props);
-        this.state = { totalbox:9,txtmsg:[],msg:'',count:0,user:[],AIComputer:[],winner:'',ids:'',room:''}
+        this.state = { totalbox:9,txtmsg:[],msg:'',count:0,user:[],AIComputer:[],winner:''}
         this.WinArray = [
                         [0,1,2],
                         [3,4,5],
@@ -19,7 +19,7 @@ class Tictoc extends Component {
                         [6,4,2]
                     ]
        
-                    
+
         socket.on('msgFromServer',(data)=>{
             console.log(data.txt);
 
@@ -32,50 +32,15 @@ class Tictoc extends Component {
             })
                     
         })
-
-        socket.on('GroupConfirm',(data)=>{
-            this.setState({room:data.room});
-        })
-
-        socket.on('roomData',(data)=>{
-            console.log(data);
-            this.setState((state)=>{
-                let txtmsg = [...state.txtmsg,data.txt]    
-                return {
-                        ...state,
-                        txtmsg
-                    }
-            })
-        })
-
-        socket.on('count',(data)=>{
-            console.log(data);
-           // this.setState({count: data.count})
-
-            this.boxEventByPlayer(this.state.id,data.count);
-        })
-        socket.on('serverEvent',(data)=>{
-           this.setState({id: data.event})
-           console.log(data);
-            //id = data.event;
-        })
       //  let win = [0,1,2];
       //  this.winChecker(win,1);
       
     }
 
-    formsubmitgroup = (e) =>{
-
-        e.preventDefault();
-        //this.setState({msg:e.target.groupname.value})
-        socket.emit('GroupJoin',{txt:e.target.groupname.value})
-        
-    }
-
     formsubmit = (e) =>{
         e.preventDefault();
         //this.setState({msg:e.target.groupname.value})
-        socket.emit('msgFromClient',{txt:e.target.message.value})
+        socket.emit('msgFromClient',{txt:e.target.groupname.value})
         
     }
 
@@ -86,13 +51,12 @@ class Tictoc extends Component {
     // Check the winner 
     winChecker = (data,UserNo) =>{
             
-            console.log(data);
+            //console.log(data);
             var check = data
             var IsWin = false;
             this.WinArray.map((w,i) => {
                 // check the Is the curent entry  to win the game
-                var dd = this.getArraysIntersection(w,check);
-                console.log(dd);              
+                var dd = this.getArraysIntersection(w,check);              
                 if(dd.length == 3){
                     IsWin = true;
                 }                
@@ -110,52 +74,30 @@ class Tictoc extends Component {
    getArraysIntersection =  (a1,a2)=>{
         return  a1.filter(function(n) { return a2.indexOf(n) !== -1;});
     }
-
-
-    boxEventByPlayer = (id,count) => {        
-        const { user,AIComputer} = this.state;
-
-            console.log(id);
-            console.log(count);
-        
-            var Winner = '';
-
-        if( parseInt(count) % 2 === 0 ){
-            document.getElementById(id).innerHTML = 'O';
-            user.push(parseInt(id));
-            if( user.length >= 3 ){
-                Winner = this.winChecker(user,0);                
-            }
-            
-        }else{
-            document.getElementById(id).innerHTML = 'X';
-            AIComputer.push(parseInt(id));
-          
-            if( AIComputer.length >= 3 ){
-                Winner = this.winChecker(AIComputer,1);
-                
-            }
-        }
-        console.log(Winner);
-        if(Winner){
-            console.log()
-            alert(`${Winner} is a Winner`);
-            // Winner function
-            
-        }
-
-    }
-
     clickEvent = (event) =>{
         const {count,user,AIComputer} = this.state;
-        var id = ''
         console.log(event.target.id);
         var Winner = '';
         this.setState({count: count + 1})
         var id = parseInt(event.target.id);
-
-        socket.emit('event',{id:event.target.id})
-         
+        if( parseInt(count) % 2 === 0 ){
+            document.getElementById(event.target.id).innerHTML = 'O';
+            user.push(id);
+            if( user.length >= 3 ){
+                Winner = this.winChecker(user,0);
+                
+            }
+            
+        }else{
+            document.getElementById(event.target.id).innerHTML = 'X';
+            AIComputer.push(id);
+          
+            if( user.length >= 3 ){
+                Winner = this.winChecker(user,0);
+                
+            }
+        }
+        
         console.log(Winner);
 
         if(Winner){
@@ -166,20 +108,16 @@ class Tictoc extends Component {
         }
     }
     render() { 
-        const{ txtmsg,room } = this.state;
+        const{ txtmsg } = this.state;
         console.log(txtmsg);
         return ( 
             <React.Fragment>
 
 <div className="container">
                    <div className="row">
-                       { !room ? (
-
-
-                     
-                        <div className="col-12 col-sm-6">
+                       <div className="col-12 col-sm-6">
                            
-                           <form method="post" onSubmit={this.formsubmitgroup}>
+                           <form method="post" onSubmit={this.formsubmit}>
                                <div className="form-group">
                                    <label>Enter the group name</label>
                                    <input className="form-control" name="groupname"></input>
@@ -189,20 +127,6 @@ class Tictoc extends Component {
                                </div>
                            </form>
                        </div>
-                         ): ''}
-                       <div className="col-12 col-sm-6">
-                           
-                           <form method="post" onSubmit={this.formsubmit}>
-                               <div className="form-group">
-                                   <label>Enter the Message</label>
-                                   <input className="form-control" name="message"></input>
-                               </div>
-                               <div className="form-group">
-                                 <input type="submit" className='btn btn-primary' ></input>
-                               </div>
-                           </form>
-                       </div>
-                       
                        
                    </div>
                    <div className="row">
